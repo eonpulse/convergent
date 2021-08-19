@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use Yii;
+use yii\base\BaseObject;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
@@ -11,6 +12,7 @@ use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\RegistrationForm;
 use app\models\User;
+use app\models\UserListForm;
 
 class SiteController extends Controller
 {
@@ -106,6 +108,14 @@ class SiteController extends Controller
         }
         return $this->render('registration', compact('model'));
     }
+
+    public function actionUsers()
+    {
+        $userlist = UserListForm::find()->all();
+
+        return $this->render('users', ['userlist' => $userlist]);
+    }
+
 
     /**
      * Logout action.
