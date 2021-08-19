@@ -14,6 +14,7 @@ class RegistrationForm extends Model
     {
         return [
             [['username', 'password'], 'required'],
+            ['username', 'unique', 'targetClass' => User::class,  'message' => 'Логин занят'],
         ];
     }
 
