@@ -2,8 +2,10 @@
 
 namespace app\controllers;
 
+use app\models\MessageForm;
 use Yii;
 use yii\base\BaseObject;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
@@ -116,7 +118,18 @@ class SiteController extends Controller
         return $this->render('users', ['userlist' => $userlist]);
     }
 
-
+    public function actionMessage()
+    {
+        $userid = Yii::$app->request->get('id');
+        $myid = Yii::$app->user->id;
+        $messages = (new Query())->from('message')->where(
+            ['OR',
+                ['AND',['userfrom'=>$userid], ['userto'=>$myid]],
+                ['AND',['userfrom'=>$myid], ['userto'=>$userid]]])->all();
+        $userto = UserListForm::find()->select('username')->where(['id'=>$userid])->asArray()->one();
+        //$messages = MessageForm::find()->all();
+        return $this->render('message', ['userto'=>$userto, 'userid' => $userid, 'messages' => $messages]);
+    }
     /**
      * Logout action.
      *
