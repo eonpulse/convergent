@@ -15,6 +15,7 @@ use app\models\ContactForm;
 use app\models\RegistrationForm;
 use app\models\User;
 use app\models\UserListForm;
+use app\models\MessageSave;
 
 class SiteController extends Controller
 {
@@ -58,6 +59,11 @@ class SiteController extends Controller
                 'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
             ],
         ];
+    }
+
+    public function debug($arr)
+    {
+        echo '<pre>'.print_r($arr, true).'</pre>';
     }
 
     /**
@@ -120,15 +126,29 @@ class SiteController extends Controller
 
     public function actionMessage()
     {
+        $model = new MessageForm();
+
+
         $userid = Yii::$app->request->get('id');
         $myid = Yii::$app->user->id;
+
+        if($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $modelsave = new MessageSave();
+            $modelsave->userto = $model->userto;
+            $modelsave->userfrom = $myid;
+            $modelsave->messagetext = $model->messagetext;
+            //$this->debug($modelsave);
+            $modelsave->save();
+        }
+
+
         $messages = (new Query())->from('message')->where(
             ['OR',
                 ['AND',['userfrom'=>$userid], ['userto'=>$myid]],
                 ['AND',['userfrom'=>$myid], ['userto'=>$userid]]])->all();
         $userto = UserListForm::find()->select('username')->where(['id'=>$userid])->asArray()->one();
         //$messages = MessageForm::find()->all();
-        return $this->render('message', ['userto'=>$userto, 'userid' => $userid, 'messages' => $messages]);
+        return $this->render('message', ['userto'=>$userto, 'userid' => $userid, 'messages' => $messages, 'model' => $model]);
     }
     /**
      * Logout action.

@@ -2,12 +2,27 @@
 
 
 namespace app\models;
-use yii\db\ActiveRecord;
 
-class MessageForm extends ActiveRecord
+use yii\base\Model;
+
+class MessageForm extends Model
 {
-    public static function tableName()
+    public $messagetext;
+    public $userto;
+    public $userfrom;
+
+    public function rules()
     {
-        return 'message';
+        return [
+            [['messagetext', 'userto'], 'required'],
+        ];
+    }
+
+    public function attributeLabels()
+    {
+        return [
+            'messagetext' => 'Текст сообщения',
+            'userto' => '',
+        ];
     }
 }
